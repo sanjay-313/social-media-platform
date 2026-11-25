@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConnectHub Social Media</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f3f5fb;color:#182338}
+.hidden{display:none!important}
+header{background:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px #ddd}
+.logo{font-size:25px;font-weight:bold;color:#4263eb}
+button{border:0;padding:11px 17px;border-radius:8px;background:#4263eb;color:white;cursor:pointer;margin:3px}
+button:hover{background:#294bd1}
+input,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin:8px 0}
+.hero{text-align:center;padding:75px 15px;background:linear-gradient(120deg,#243e9d,#7655e8);color:white}
+.hero h1{font-size:42px;margin:15px}
+.hero p{margin:15px}
+.features{display:flex;gap:20px;justify-content:center;padding:30px;flex-wrap:wrap}
+.feature,.card,.post,.panel{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 12px #ddd;margin-bottom:15px}
+.feature{width:250px}
+.auth{max-width:420px;margin:50px auto;padding:25px;background:white;border-radius:12px;box-shadow:0 3px 12px #ddd}
+.layout{display:grid;grid-template-columns:210px 1fr 230px;gap:20px;padding:25px;max-width:1300px;margin:auto}
+.sidebar,.rightbar{background:white;padding:15px;border-radius:12px;height:max-content}
+.side-link{display:block;width:100%;text-align:left;background:#f0f2ff;color:#3048a5;margin:7px 0}
+.main{min-width:0}
+.welcome{padding:22px;background:#4263eb;color:white;border-radius:12px;margin-bottom:18px}
+.stats{display:flex;gap:10px;margin-bottom:15px}
+.stat{flex:1;background:white;padding:15px;border-radius:10px}
+.stat b{display:block;font-size:23px;margin-top:5px}
+.post{margin-top:15px}
+.post-head{display:flex;justify-content:space-between;align-items:center}
+.post-text{margin:15px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.post img{max-width:100%;max-height:350px;display:block;margin:10px 0;border-radius:10px}
+.actions{border-top:1px solid #eee;padding-top:10px}
+.comment{padding:7px;border-bottom:1px solid #eee;font-size:14px}
+.profile{text-align:center;background:white;padding:25px;border-radius:12px}
+.avatar{width:75px;height:75px;border-radius:50%;background:#4263eb;color:white;display:grid;place-items:center;margin:auto;font-size:25px}
+.admin{max-width:1000px;margin:25px auto;padding:15px}
+.admin-row{display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid #ddd;gap:10px}
+.muted{color:#777;font-size:13px}
+#toast{position:fixed;bottom:20px;right:20px;background:#182338;color:white;padding:12px 20px;border-radius:8px;display:none}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.rightbar{display:none}}
+@media(max-width:550px){.stats{flex-direction:column}.hero h1{font-size:30px}.features{padding:15px}}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- HOME PAGE -->
+<section id="homePage">
+<header>
+ <div class="logo">ConnectHub.</div>
+ <div>
+  <button onclick="showPage('loginPage')">Login</button>
+  <button onclick="showPage('signupPage')">Sign Up</button>
+ </div>
+</header>
+
+<div class="hero">
+ <h1>Connect with People</h1>
+ <p>Share your thoughts, meet people and build your community.</p>
+ <button onclick="showPage('signupPage')">Create Account</button>
+</div>
+
+<div class="features">
+ <div class="feature"><h3>✍️ Share Posts</h3><p>Publish your thoughts and updates.</p></div>
+ <div class="feature"><h3>💬 Comments</h3><p>Communicate with your community.</p></div>
+ <div class="feature"><h3>👥 Connect</h3><p>Follow people and discover users.</p></div>
+</div>
+</section>
+
+<!-- SIGNUP PAGE -->
+<section id="signupPage" class="auth hidden">
+ <h2>Create Account</h2>
+ <input id="signupName" placeholder="Full Name">
+ <input id="signupEmail" type="email" placeholder="Email">
+ <input id="signupPassword" type="password" placeholder="Password">
+ <button onclick="registerUser()">Register</button>
+ <p>Already registered?
+ <a href="#" onclick="showPage('loginPage')">Login</a></p>
+</section>
+
+<!-- LOGIN PAGE -->
+<section id="loginPage" class="auth hidden">
+ <h2>Login</h2>
+ <input id="loginEmail" type="email" placeholder="Email">
+ <input id="loginPassword" type="password" placeholder="Password">
+ <button onclick="loginUser()">Login</button>
+ <p>New user?
+ <a href="#" onclick="showPage('signupPage')">Create Account</a></p>
+ <hr>
+ <p class="muted">
+ Admin: admin@connecthub.in / admin123<br>
+ User: priya@gmail.com / 12345
+ </p>
+</section>
+
+<!-- USER DASHBOARD -->
+<section id="userPage" class="hidden">
+<header>
+ <div class="logo">ConnectHub.</div>
+ <button onclick="logout()">Logout</button>
+</header>
+
+<div class="layout">
+ <aside class="sidebar">
+  <h3 id="sideName">User</h3>
+  <button class="side-link" onclick="showDashboard()">🏠 Home Feed</button>
+  <button class="side-link" onclick="showProfile()">👤 My Profile</button>
+  <button class="side-link" onclick="showExplore()">🔎 Explore People</button>
+  <button class="side-link" onclick="showSaved()">🔖 Saved Posts</button>
+  <button class="side-link" onclick="showNotifications()">🔔 Notifications</button>
+  <button class="side-link" onclick="logout()">Logout</button>
+ </aside>
+
+ <main class="main" id="dashboardContent"></main>
+
+ <aside class="rightbar">
+  <h3>About ConnectHub</h3>
+  <p class="muted">A social networking platform for sharing posts and connecting with people.</p>
+ </aside>
+</div>
+</section>
+
+<!-- ADMIN DASHBOARD -->
+<section id="adminPage" class="hidden">
+<header>
+ <div class="logo">ConnectHub Admin</div>
+ <button onclick="logout()">Logout</button>
+</header>
+<div class="admin">
+ <h2>Admin Dashboard</h2>
+ <div class="stats">
+  <div class="stat">Users <b id="totalUsers">0</b></div>
+  <div class="stat">Posts <b id="totalPosts">0</b></div>
+  <div class="stat">Likes <b id="totalLikes">0</b></div>
+ </div>
+ <div class="card"><h3>Manage Users</h3><div id="usersList"></div></div>
+ <div class="card"><h3>Manage Posts</h3><div id="adminPosts"></div></div>
+</div>
+</section>
+
+<script>
+const USERS="connecthub_users";
+const POSTS="connecthub_posts";
+const SESSION="connecthub_session";
+const NOTICES="connecthub_notices";
+
+function read(key){
+ try{return JSON.parse(localStorage.getItem(key))||[]}
+ catch{return []}
+}
+function save(key,data){
+ localStorage.setItem(key,JSON.stringify(data));
+}
+function notify(message){
+ const t=document.getElementById("toast");
+ t.textContent=message;
+ t.style.display="block";
+ setTimeout(()=>t.style.display="none",2200);
+}
+
+function initialize(){
+ if(!localStorage.getItem(USERS)){
+  save(USERS,[
+   {id:1,name:"Admin",email:"admin@connecthub.in",password:"admin123",role:"admin",bio:"Administrator",following:[]},
+   {id:2,name:"Priya Reddy",email:"priya@gmail.com",password:"12345",role:"user",bio:"Student and creative thinker",following:[]},
+   {id:3,name:"Sandeep Kumar",email:"sandeep@gmail.com",password:"12345",role:"user",bio:"Technology enthusiast",following:[]}
+  ]);
+ }
+ if(!localStorage.getItem(POSTS)){
+  save(POSTS,[
+   {id:1,userId:2,userName:"Priya Reddy",text:"Welcome to ConnectHub! 👋",likes:[],comments:[],savedBy:[],time:Date.now()},
+   {id:2,userId:3,userName:"Sandeep Kumar",text:"Learning something new every day!",likes:[],comments:[],savedBy:[],time:Date.now()}
+  ]);
+ }
+ if(!localStorage.getItem(NOTICES))save(NOTICES,[]);
+}
+initialize();
+
+function currentUser(){
+ return JSON.parse(localStorage.getItem(SESSION)||"null");
+}
+function showPage(id){
+ ["homePage","signupPage","loginPage","userPage","adminPage"].forEach(x=>{
+  document.getElementById(x).classList.add("hidden");
+ });
+ document.getElementById(id).classList.remove("hidden");
+}
+
+function registerUser(){
+ const name=document.getElementById("signupName").value.trim();
+ const email=document.getElementById("signupEmail").value.trim().toLowerCase();
+ const password=document.getElementById("signupPassword").value;
+
+ if(!name||!email||!password){notify("Fill all fields");return}
+ if(password.length<6){notify("Password needs 6 characters");return}
+
+ const users=read(USERS);
+ if(users.some(u=>u.email===email)){notify("Email already exists");return}
+
+ users.push({
+  id:Date.now(),name,email,password,role:"user",bio:"New member",following:[]
+ });
+ save(USERS,users);
+ notify("Registration successful");
+ showPage("loginPage");
+ document.getElementById("loginEmail").value=email;
+}
+
+function loginUser(){
+ const email=document.getElementById("loginEmail").value.trim().toLowerCase();
+ const password=document.getElementById("loginPassword").value;
+ const user=read(USERS).find(u=>u.email===email&&u.password===password);
+
+ if(!user){notify("Invalid email or password");return}
+ localStorage.setItem(SESSION,JSON.stringify(user));
+
+ if(user.role==="admin")showAdmin();
+ else showDashboard();
+}
+
+function logout(){
+ localStorage.removeItem(SESSION);
+ showPage("homePage");
+ notify("Logged out");
+}
+
+function requireUser(){
+ const u=currentUser();
+ if(!u||u.role!=="user"){showPage("loginPage");return null}
+ return u;
+}
+
+function showDashboard(){
+ const u=requireUser();
+ if(!u)return;
+ showPage("userPage");
+ document.getElementById("sideName").textContent=u.name;
+
+ const myPosts=read(POSTS).filter(p=>p.userId===u.id);
+ const myLikes=myPosts.reduce((n,p)=>n+p.likes.length,0);
+
+ document.getElementById("dashboardContent").innerHTML=`
+ <div class="welcome">
+  <h2>Welcome, ${safe(u.name)}!</h2>
+  <p>Share something with your community.</p>
+ </div>
+ <div class="stats">
+  <div class="stat">Your Posts <b>${myPosts.length}</b></div>
+  <div class="stat">Following <b>${(u.following||[]).length}</b></div>
+  <div class="stat">Likes <b>${myLikes}</b></div>
+ </div>
+ <div class="card">
+  <h3>Create a Post</h3>
+  <textarea id="postText" placeholder="What's on your mind?"></textarea>
+  <input id="postImage" placeholder="Optional image URL">
+  <button onclick="createPost()">Publish Post</button>
+ </div>
+ <h2>Community Feed</h2>
+ <input id="feedSearch" placeholder="Search posts..." oninput="renderFeed()">
+ <div id="feed"></div>`;
+ renderFeed();
+}
+
+function safe(value){
+ return String(value||"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+function createPost(){
+ const u=requireUser();
+ if(!u)return;
+ const text=document.getElementById("postText").value.trim();
+ const image=document.getElementById("postImage").value.trim();
+ if(!text&&!image){notify("Write something first");return}
+ if(image&&!/^https?:\/\//i.test(image)){notify("Enter a valid image URL");return}
+
+ const posts=read(POSTS);
+ posts.unshift({
+  id:Date.now(),userId:u.id,userName:u.name,text,image,
+  likes:[],comments:[],savedBy:[],time:Date.now()
+ });
+ save(POSTS,posts);
+ showDashboard();
+ notify("Post published");
+}
+
+function renderFeed(){
+ const box=document.getElementById("feed");
+ if(!box)return;
+ const u=currentUser();
+ const q=(document.getElementById("feedSearch")?.value||"").toLowerCase();
+ const posts=read(POSTS).filter(p=>(p.text+" "+p.userName).toLowerCase().includes(q));
+
+ if(!posts.length){box.innerHTML="<p>No posts found.</p>";return}
+
+ box.innerHTML=posts.map(p=>{
+  const liked=p.likes.includes(u.id);
+  const saved=(p.savedBy||[]).includes(u.id);
+  const comments=(p.comments||[]).map(c=>
+   `<div class="comment"><b>${safe(c.name)}:</b> ${safe(c.text)}</div>`
+  ).join("");
+
+  return `
+  <article class="post">
+   <div class="post-head">
+    <b>${safe(p.userName)}</b>
+    ${p.userId===u.id?`
+     <button onclick="editPost(${p.id})">Edit</button>
+     <button onclick="deletePost(${p.id})">Delete</button>`:""}
+   </div>
+   <p class="post-text">${safe(p.text)}</p>
+   ${p.image?`<img src="${safe(p.image)}" alt="Post image">`:""}
+   <div class="actions">
+    <button onclick="likePost(${p.id})">${liked?"♥ Liked":"♡ Like"} (${p.likes.length})</button>
+    <button onclick="toggleSave(${p.id})">${saved?"Saved":"Save"}</button>
+   </div>
+   <div>${comments}</div>
+   <input id="comment${p.id}" placeholder="Write a comment">
+   <button onclick="addComment(${p.id})">Comment</button>
+  </article>`;
+ }).join("");
+}
+
+function likePost(id){
+ const u=requireUser();
+ if(!u)return;
+ const posts=read(POSTS);
+ const p=posts.find(x=>x.id===id);
+ if(!p)return;
+ const i=p.likes.indexOf(u.id);
+ if(i===-1){
+  p.likes.push(u.id);
+  addNotice(p.userId,u.name+" liked your post");
+ }else p.likes.splice(i,1);
+ save(POSTS,posts);
+ renderFeed();
+}
+
+function addComment(id){
+ const u=requireUser();
+ if(!u)return;
+ const input=document.getElementById("comment"+id);
+ const text=input.value.trim();
+ if(!text)return;
+ const posts=read(POSTS);
+ const p=posts.find(x=>x.id===id);
+ if(!p)return;
+ p.comments.push({name:u.name,text});
+ save(POSTS,posts);
+ addNotice(p.userId,u.name+" commented on your post");
+ renderFeed();
+ notify("Comment added");
+}
+
+function toggleSave(id){
+ const u=requireUser();
+ if(!u)return;
+ const posts=read(POSTS);
+ const p=posts.find(x=>x.id===id);
+ if(!p)return;
+ p.savedBy=p.savedBy||[];
+ const i=p.savedBy.indexOf(u.id);
+ if(i===-1)p.savedBy.push(u.id);
+ else p.savedBy.splice(i,1);
+ save(POSTS,posts);
+ renderFeed();
+}
+
+function deletePost(id){
+ const u=requireUser();
+ if(!confirm("Delete this post?"))return;
+ save(POSTS,read(POSTS).filter(p=>p.id!==id||p.userId!==u.id));
+ showDashboard();
+}
+
+function editPost(id){
+ const p=read(POSTS).find(x=>x.id===id);
+ if(!p)return;
+ const text=prompt("Edit your post",p.text);
+ if(text===null)return;
+ p.text=text.trim();
+ const posts=read(POSTS);
+ const index=posts.findIndex(x=>x.id===id);
+ posts[index]=p;
+ save(POSTS,posts);
+ showDashboard();
+}
+
+function showProfile(){
+ const u=requireUser();
+ if(!u)return;
+ showPage("userPage");
+ const posts=read(POSTS).filter(p=>p.userId===u.id);
+ document.getElementById("dashboardContent").innerHTML=`
+ <div class="profile">
+  <div class="avatar">${safe(u.name[0])}</div>
+  <h2>${safe(u.name)}</h2>
+  <p>${safe(u.email)}</p>
+  <p>${safe(u.bio||"ConnectHub member")}</p>
+  <h3>${posts.length} Posts</h3>
+  <button onclick="editProfile()">Edit Profile</button>
+ </div>
+ <h2>My Posts</h2>
+ ${posts.map(p=>`<div class="post">${safe(p.text)}</div>`).join("")}`;
+}
+
+function editProfile(){
+ const u=currentUser();
+ const name=prompt("Enter your name",u.name);
+ if(!name)return;
+ const bio=prompt("Enter your bio",u.bio||"");
+ const users=read(USERS);
+ const stored=users.find(x=>x.id===u.id);
+ stored.name=name.trim();
+ stored.bio=bio||"";
+ localStorage.setItem(SESSION,JSON.stringify(stored));
+ save(USERS,users);
+ const posts=read(POSTS);
+ posts.forEach(p=>{if(p.userId===u.id)p.userName=stored.name});
+ save(POSTS,posts);
+ showProfile();
+}
+
+function showExplore(){
+ const u=requireUser();
+ if(!u)return;
+ showPage("userPage");
+ const users=read(USERS).filter(x=>x.role==="user"&&x.id!==u.id);
+ document.getElementById("dashboardContent").innerHTML=`
+ <h2>Explore People</h2>
+ <input id="peopleSearch" placeholder="Search people..." oninput="renderExplore()">
+ <div id="peopleResults"></div>`;
+ renderExplore();
+}
+
+function renderExplore(){
+ const u=currentUser();
+ const q=(document.getElementById("peopleSearch")?.value||"").toLowerCase();
+ const users=read(USERS).filter(x=>
+  x.role==="user"&&x.id!==u.id&&
+  (x.name+" "+x.email).toLowerCase().includes(q)
+ );
+ document.getElementById("peopleResults").innerHTML=users.map(p=>{
+  const following=(u.following||[]).includes(p.id);
+  return `<div class="post">
+   <b>${safe(p.name)}</b>
+   <p>${safe(p.bio)}</p>
+   <button onclick="toggleFollow(${p.id})">${following?"Following":"Follow"}</button>
+  </div>`;
+ }).join("")||"No users found";
+}
+
+function toggleFollow(id){
+ const u=currentUser();
+ const users=read(USERS);
+ const me=users.find(x=>x.id===u.id);
+ me.following=me.following||[];
+ const i=me.following.indexOf(id);
+ if(i===-1){
+  me.following.push(id);
+  addNotice(id,me.name+" started following you");
+ }else me.following.splice(i,1);
+ save(USERS,users);
+ localStorage.setItem(SESSION,JSON.stringify(me));
+ showExplore();
+}
+
+function showSaved(){
+ const u=requireUser();
+ if(!u)return;
+ showPage("userPage");
+ const posts=read(POSTS).filter(p=>(p.savedBy||[]).includes(u.id));
+ document.getElementById("dashboardContent").innerHTML=
+ "<h2>Saved Posts</h2>"+
+ posts.map(p=>`<div class="post"><b>${safe(p.userName)}</b><p>${safe(p.text)}</p></div>`).join("")||
+ "<p>No saved posts.</p>";
+}
+
+function addNotice(userId,text){
+ const notices=read(NOTICES);
+ notices.unshift({userId,text,time:Date.now()});
+ save(NOTICES,notices);
+}
+
+function showNotifications(){
+ const u=requireUser();
+ if(!u)return;
+ showPage("userPage");
+ const notices=read(NOTICES).filter(n=>n.userId===u.id);
+ document.getElementById("dashboardContent").innerHTML=
+ "<h2>Notifications</h2>"+
+ notices.map(n=>`<div class="post">${safe(n.text)}</div>`).join("")||
+ "<p>No notifications yet.</p>";
+}
+
+function showAdmin(){
+ showPage("adminPage");
+ renderAdmin();
+}
+
+function renderAdmin(){
+ const users=read(USERS).filter(u=>u.role==="user");
+ const posts=read(POSTS);
+ document.getElementById("totalUsers").textContent=users.length;
+ document.getElementById("totalPosts").textContent=posts.length;
+ document.getElementById("totalLikes").textContent=posts.reduce((n,p)=>n+p.likes.length,0);
+
+ document.getElementById("usersList").innerHTML=users.map(u=>`
+ <div class="admin-row">
+  <span>${safe(u.name)} (${safe(u.email)})</span>
+  <button onclick="adminDeleteUser(${u.id})">Delete</button>
+ </div>`).join("")||"No users";
+
+ document.getElementById("adminPosts").innerHTML=posts.map(p=>`
+ <div class="admin-row">
+  <span>${safe(p.userName)}: ${safe(p.text)}</span>
+  <button onclick="adminDeletePost(${p.id})">Delete</button>
+ </div>`).join("")||"No posts";
+}
+
+function adminDeleteUser(id){
+ if(!confirm("Delete this user?"))return;
+ save(USERS,read(USERS).filter(u=>u.id!==id));
+ save(POSTS,read(POSTS).filter(p=>p.userId!==id));
+ renderAdmin();
+}
+
+function adminDeletePost(id){
+ if(!confirm("Delete this post?"))return;
+ save(POSTS,read(POSTS).filter(p=>p.id!==id));
+ renderAdmin();
+}
+
+// Restore session after page refresh
+(function(){
+ const u=currentUser();
+ if(!u)return;
+ const fresh=read(USERS).find(x=>x.id===u.id);
+ if(!fresh){localStorage.removeItem(SESSION);return}
+ if(fresh.role==="admin")showAdmin();
+ else showDashboard();
+})();
+</script>
+</body>
+</html>
